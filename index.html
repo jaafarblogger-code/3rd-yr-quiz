@@ -1,0 +1,1073 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Physiology Quiz: Pancreas & Biliary System (Lec 5 & 6)</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Load Inter font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #020617; } /* slate-950 */
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; } /* slate-700 */
+        ::-webkit-scrollbar-thumb:hover { background: #475569; } /* slate-600 */
+        
+        /* Disabled buttons */
+        .option-btn:disabled { opacity: 0.9; cursor: not-allowed; }
+        .pagination-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        
+        /* Reference Tooltip */
+        .reference-tooltip { position: relative; display: inline-block; cursor: help; }
+        .reference-tooltip .tooltip-text { 
+            visibility: hidden; 
+            width: 220px; 
+            background-color: #1e293b; /* slate-800 */
+            color: #fff; 
+            text-align: center; 
+            border-radius: 6px; 
+            padding: 8px; 
+            position: absolute; 
+            z-index: 10; 
+            bottom: 125%; 
+            left: 50%; 
+            margin-left: -110px; 
+            opacity: 0; 
+            transition: opacity 0.3s; 
+            border: 1px solid #334155; /* slate-700 */
+            font-size: 0.875rem; 
+            font-weight: 400; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+        .reference-tooltip:hover .tooltip-text { visibility: visible; opacity: 1; }
+        
+        /* Fade Animation */
+        .fade-enter {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        .fade-enter-active {
+            opacity: 1;
+            transform: translateY(0);
+            transition: all 0.3s ease;
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-200 min-h-screen p-6 md:p-8">
+
+    <!-- Progress Bar -->
+    <div class="fixed top-0 left-0 w-full h-1.5 bg-slate-800 z-50">
+        <div id="progress-bar" class="h-full bg-indigo-500 transition-all duration-300" style="width: 0%"></div>
+    </div>
+
+    <main class="max-w-4xl mx-auto pt-10 relative z-10">
+
+        <!-- Header -->
+        <header class="text-center mb-10 pb-6 border-b border-slate-700">
+            <h1 class="text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-cyan-400 mb-3">
+                Physiology Quiz
+            </h1>
+            <p class="text-lg text-slate-400 tracking-wide">Pancreas & Biliary System (Lec 5 & 6)</p>
+        </header>
+
+        <!-- Toggle Buttons (Sticky) -->
+        <div class="flex justify-center items-center py-4 sticky top-1.5 z-20 bg-slate-950">
+            <div id="tab-container" class="flex flex-wrap justify-center gap-1 p-1 bg-slate-800 rounded-xl shadow-inner">
+                <button id="hy-tab-btn-p1" class="tab px-3 py-2.5 rounded-lg font-semibold text-xs md:text-sm transition-colors duration-200"></button>
+                <button id="usmle-tab-btn-p1" class="tab px-3 py-2.5 rounded-lg font-semibold text-xs md:text-sm transition-colors duration-200"></button>
+                <button id="hy-tab-btn-p2" class="tab px-3 py-2.5 rounded-lg font-semibold text-xs md:text-sm transition-colors duration-200"></button>
+                <button id="usmle-tab-btn-p2" class="tab px-3 py-2.5 rounded-lg font-semibold text-xs md:text-sm transition-colors duration-200"></button>
+            </div>
+        </div>
+
+        <!-- Score Container (Initially Hidden) -->
+        <div id="score-container" class="hidden text-center mt-10 p-8 bg-slate-900 border border-slate-700 rounded-xl shadow-2xl">
+            <h2 class="text-3xl font-bold text-white mb-4">Quiz Complete!</h2>
+            <p class="text-4xl font-bold text-indigo-400 my-6" id="score-text"></p>
+            <div class="flex flex-col sm:flex-row justify-center gap-4 mt-8">
+                <button id="review-btn" class="bg-slate-600 hover:bg-slate-500 text-white font-bold py-2.5 px-6 rounded-lg transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5 transform">
+                    Review Answers
+                </button>
+                <button id="restart-btn" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2.5 px-6 rounded-lg transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5 transform">
+                    Restart Quiz
+                </button>
+            </div>
+        </div>
+
+        <!-- Quiz Container -->
+        <div id="quiz-container" class="space-y-8 mt-8">
+            <!-- Questions will be dynamically inserted here -->
+        </div>
+
+        <!-- Finish Button Container -->
+        <div id="finish-container" class="flex justify-between items-center mt-10 py-4 border-t border-slate-700">
+             <div>
+                <span class="text-sm text-slate-400"><span id="answered-count">0</span> / <span id="total-count">0</span> answered</span>
+            </div>
+            <div>
+                <!-- Finish button will be dynamically inserted here -->
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        // =================================================================
+        // === PART 1 (Lec 5): High-Yield MCQs (Pancreas) ===
+        // =================================================================
+        const highYieldMCQs_p1 = [
+            {
+                type: "mcq",
+                difficulty: "Easy",
+                vignette: "",
+                question: "Which cell type is responsible for secreting the enzymatic (digestive) portion of pancreatic juice?",
+                options: [
+                    "Acinar cells",
+                    "Ductal cells",
+                    "Islets of Langerhans",
+                    "G cells"
+                ],
+                answer: 0,
+                explanation: "Acinar cells synthesize and secrete the digestive enzymes (e.g., trypsinogen, lipase), while ductal cells secrete the watery, bicarbonate-rich fluid.",
+                reference: "Ref: Lec 5, Pg 7",
+                userAnswer: undefined
+            },
+            {
+                type: "mcq",
+                difficulty: "Easy",
+                vignette: "",
+                question: "What is the primary function of the bicarbonate (HCO3-) component of pancreatic juice secreted by ductal cells?",
+                options: [
+                    "To digest fats",
+                    "To activate pepsinogen",
+                    "To neutralize acidic chyme from the stomach",
+                    "To trigger the release of CCK"
+                ],
+                answer: 2,
+                explanation: "The bicarbonate-rich fluid from the ductal cells is crucial for neutralizing the highly acidic chyme entering the duodenum, protecting the mucosa and allowing pancreatic enzymes to function.",
+                reference: "Ref: Lec 5, Pg 8",
+                userAnswer: undefined
+            },
+            {
+                type: "mcq",
+                difficulty: "Moderate",
+                vignette: "",
+                question: "Pancreatic trypsinogen is converted to its active form, trypsin, by which enzyme located in the duodenal brush border?",
+                options: [
+                    "Pepsin",
+                    "Enterokinase (enteropeptidase)",
+                    "Amylase",
+                    "Trypsin inhibitor"
+                ],
+                answer: 1,
+                explanation: "Enterokinase (also called enteropeptidase) is an enzyme in the duodenal mucosa that acts as the 'master switch' by cleaving trypsinogen to the active enzyme trypsin.",
+                reference: "Ref: Lec 5, Pg 11",
+                userAnswer: undefined
+            },
+            {
+                type: "mcq",
+                difficulty: "Moderate",
+                vignette: "",
+                question: "Once activated, what is the *primary* role of trypsin in the intestinal lumen?",
+                options: [
+                    "To digest carbohydrates",
+                    "To emulsify fats",
+                    "To activate all other pancreatic proteolytic zymogens",
+                    "To neutralize gastric acid"
+                ],
+                answer: 2,
+                explanation: "Trypsin's most important role is to perform a cascade of activations, converting chymotrypsinogen, procarboxypeptidase, and other zymogens into their active forms.",
+                reference: "Ref: Lec 5, Pg 11",
+                userAnswer: undefined
+            },
+            {
+                type: "mcq",
+                difficulty: "Moderate",
+                vignette: "",
+                question: "What are the final, absorbable end-products of carbohydrate digestion by pancreatic amylase?",
+                options: [
+                    "Monosaccharides (glucose, fructose)",
+                    "Disaccharides (e.g., maltose) and oligosaccharides",
+                    "Free fatty acids",
+                    "Amino acids"
+                ],
+                answer: 1,
+                explanation: "Like salivary amylase, pancreatic amylase breaks down starch into smaller units like disaccharides (maltose) and oligosaccharides, but NOT into absorbable monosaccharides.",
+                reference: "Ref: Lec 5, Pg 13",
+                userAnswer: undefined
+            },
+            {
+                type: "mcq",
+                difficulty: "Moderate",
+                vignette: "",
+                question: "The presence of acid (low pH) in the duodenum is the primary stimulus for the release of which hormone?",
+                options: [
+                    "Secretin",
+                    "Cholecystokinin (CCK)",
+                    "Gastrin",
+                    "Somatostatin"
+                ],
+                answer: 0,
+                explanation: "Acid in the duodenum stimulates S-cells to release Secretin. Secretin then acts on pancreatic ductal cells to release bicarbonate-rich fluid to neutralize the acid.",
+                reference: "Ref: Lec 5, Pg 17",
+                userAnswer: undefined
+            },
+            {
+                type: "mcq",
+                difficulty: "Moderate",
+                vignette: "",
+                question: "The presence of fat and protein in the duodenum is the primary stimulus for the release of which hormone?",
+                options: [
+                    "Secretin",
+                    "Cholecystokinin (CCK)",
+                    "Gastrin",
+                    "Somatostatin"
+                ],
+                answer: 1,
+                explanation: "Fats and proteins in the duodenum stimulate I-cells to release CCK. CCK then acts on pancreatic acinar cells to release digestive enzymes.",
+                reference: "Ref: Lec 5, Pg 17",
+                userAnswer: undefined
+            },
+            {
+                type: "mcq",
+                difficulty: "Hard",
+                vignette: "",
+                question: "What substance, co-secreted by acinar cells, prevents the premature activation of trypsin *within* the pancreas, thereby preventing autodigestion?",
+                options: [
+                    "Enterokinase",
+                    "Bicarbonate",
+                    "Trypsin inhibitor",
+                    "Chymotrypsinogen"
+                ],
+                answer: 2,
+                explanation: "Acinar cells package trypsin inhibitor along with their zymogens. This inhibitor binds and inactivates any trypsin that might be accidentally formed within the pancreas.",
+                reference: "Ref: Lec 5, Pg 10",
+                userAnswer: undefined
+            },
+            {
+                type: "mcq",
+                difficulty: "Hard",
+                vignette: "",
+                question: "How do Secretin and CCK differ in their *primary* effects on the pancreas?",
+                options: [
+                    "Secretin stimulates enzymes; CCK stimulates bicarbonate",
+                    "Secretin stimulates ductal cells (HCO3-); CCK stimulates acinar cells (enzymes)",
+                    "Both stimulate acinar cells, but CCK is stronger",
+                    "Both stimulate ductal cells, but Secretin is stronger"
+                ],
+                answer: 1,
+                explanation: "This is the key distinction: Secretin ('nature's antacid') targets *ductal cells* for bicarbonate. CCK (for digestion) targets *acinar cells* for enzymes.",
+                reference: "Ref: Lec 5, Pg 17",
+                userAnswer: undefined
+            }
+        ];
+
+
+        // =================================================================
+        // === PART 1 (Lec 5): USMLE-Style Q-Bank (Pancreas) ===
+        // =================================================================
+        const usmleLevelMCQs_p1 = [
+            {
+                type: "mcq",
+                difficulty: "Hard",
+                vignette: "A 50-year-old man with a history of chronic alcohol abuse is brought to the ED with severe, boring epigastric pain that radiates to the back. He has nausea and is vomiting. Lab results show a serum amylase and lipase >3x the upper limit of normal.",
+                question: "This patient's condition is caused by the premature activation of pancreatic zymogens. Which enzyme is pathologically activated *first* and is responsible for activating all other enzymes, leading to autodigestion?",
+                options: [
+                    "Trypsin",
+                    "Chymotrypsin",
+                    "Pancreatic lipase",
+                    "Enterokinase"
+                ],
+                answer: 0,
+                explanation: "Acute pancreatitis (here, from alcohol) is an autodigestion of the gland. The key initiating event is the premature activation of *trypsinogen to trypsin* within the acinar cells. Trypsin then activates all other zymogens, causing a destructive cascade.",
+                reference: "Ref: Lec 5, Pg 10, 11",
+                highYieldTip: "Acute pancreatitis = Autodigestion. The key initiating event is the premature activation of *trypsinogen to trypsin* within the pancreas, which then activates all other enzymes.",
+                userAnswer: undefined
+            },
+            {
+                type: "mcq",
+                difficulty: "Hard",
+                vignette: "A 10-year-old child with recurrent pulmonary infections and a history of failure to thrive presents with bulky, foul-smelling, 'floating' stools (steatorrhea). A sweat chloride test is positive.",
+                question: "This patient's malabsorption is due to pancreatic insufficiency. The genetic defect in the CFTR channel directly impairs the secretion of which component, leading to thickened secretions that plug the ducts?",
+                options: [
+                    "Digestive enzymes from acinar cells",
+                    "Bicarbonate and water from ductal cells",
+                    "Trypsin inhibitor from acinar cells",
+                    "Insulin from Islet cells"
+                ],
+                answer: 1,
+                explanation: "In cystic fibrosis, the CFTR channel defect is on the *ductal cells*. This prevents Cl- and subsequent HCO3- and water secretion. Without this watery, alkaline fluid to flush them, the enzyme-rich acinar secretions become thick, plug the ducts, and cause fibrosis.",
+                reference: "Ref: Lec 5, Pg 8, 19",
+                highYieldTip: "CFTR defect (Cystic Fibrosis) → failed Cl- secretion by *ductal cells* → failed HCO3- and water secretion → thick, protein-rich fluid plugs ducts → pancreatic insufficiency & steatorrhea.",
+                userAnswer: undefined
+            },
+            {
+                type: "mcq",
+                difficulty: "Moderate",
+                vignette: "A patient consumes a meal rich in fats and proteins. As the chyme enters the duodenum, it triggers the release of a hormone from I-cells that stimulates the pancreas.",
+                question: "Which hormone is primarily responsible for stimulating the acinar cells to release the digestive enzymes (lipase, trypsinogen) needed for this meal?",
+                options: [
+                    "Secretin",
+                    "Gastrin",
+                    "Somatostatin",
+                    "Cholecystokinin (CCK)"
+                ],
+                answer: 3,
+                explanation: "CCK is the hormone for *digestion*. It is released in response to *Fats/Proteins*. It has two main jobs: 1) Stimulate pancreatic *acinar cells* to release enzymes, and 2) Contract the gallbladder.",
+                reference: "Ref: Lec 5, Pg 17",
+                highYieldTip: "CCK = Released in response to *Fats/Proteins*. It targets *acinar cells* (for enzymes) and the *gallbladder* (for contraction/bile).",
+                userAnswer: undefined
+            },
+            {
+                type: "mcq",
+                difficulty: "Moderate",
+                vignette: "Highly acidic chyme (pH 2.0) from the stomach is squirted into the duodenum. This immediately triggers the release of a hormone from duodenal S-cells.",
+                question: "What is this hormone and its primary *pancreatic* function?",
+                options: [
+                    "Secretin, which stimulates ductal cells to release bicarbonate",
+                    "CCK, which stimulates acinar cells to release enzymes",
+                    "Gastrin, which stimulates pancreatic growth",
+                    "Somatostatin, which inhibits all pancreatic secretion"
+                ],
+                answer: 0,
+                explanation: "Secretin is 'nature's antacid.' It is released from S-cells in response to *Acid*. Its primary job is to stimulate pancreatic *ductal cells* to secrete a massive amount of watery, bicarbonate-rich (alkaline) fluid to neutralize the acid.",
+                reference: "Ref: Lec 5, Pg 17",
+                highYieldTip: "Secretin = Released in response to *Acid*. It targets *ductal cells* (in pancreas and liver) to secrete *bicarbonate* (HCO3-) to neutralize the acid.",
+                userAnswer: undefined
+            },
+            {
+                type: "mcq",
+                difficulty: "Hard",
+                vignette: "A patient is found to have a congenital *enterokinase* deficiency. This patient would present with severe malabsorption, particularly of protein, and failure to thrive.",
+                question: "What is the direct, uncorrected physiological consequence of this deficiency?",
+                options: [
+                    "Failure to convert trypsinogen to trypsin",
+                    "Overproduction of chymotrypsin",
+                    "Pancreatic autodigestion (pancreatitis)",
+                    "Inability to absorb monosaccharides"
+                ],
+                answer: 0,
+                explanation: "Enterokinase (on the duodenal brush border) is the *only* enzyme that can activate *trypsinogen to trypsin*. Without it, trypsin is not formed, and therefore, *all other* proteolytic zymogens (chymotrypsinogen, etc.) cannot be activated, leading to a complete failure of protein digestion.",
+                reference: "Ref: Lec 5, Pg 11",
+                highYieldTip: "Enterokinase (enteropeptidase) is the 'master switch' on the duodenal brush border. It's the *only* thing that activates trypsinogen to trypsin. Trypsin then activates everything else.",
+                userAnswer: undefined
+            }
+        ];
+
+
+        // =================================================================
+        // === PART 2 (Lec 6): High-Yield MCQs (Biliary) ===
+        // =================================================================
+        const highYieldMCQs_p2 = [
+            {
+                type: "mcq",
+                difficulty: "Easy",
+                vignette: "",
+                question: "Where are bile salts synthesized, and where are they primarily stored and concentrated?",
+                options: [
+                    "Synthesized in gallbladder; Stored in liver",
+                    "Synthesized in pancreas; Stored in gallbladder",
+                    "Synthesized in liver; Stored in gallbladder",
+                    "Synthesized in duodenum; Stored in liver"
+                ],
+                answer: 2,
+                explanation: "Bile salts are synthesized *by hepatocytes in the liver*. The bile is then sent to the *gallbladder* for storage and concentration (5-10x).",
+                reference: "Ref: Lec 6, Pg 8, 10",
+                userAnswer: undefined
+            },
+            {
+                type: "mcq",
+                difficulty: "Easy",
+                vignette: "",
+                question: "What is the primary digestive function of bile salts?",
+                options: [
+                    "To digest proteins",
+                    "To neutralize gastric acid",
+                    "To emulsify large fat globules",
+                    "To absorb glucose"
+                ],
+                answer: 2,
+                explanation: "Bile salts act like a detergent, breaking down large fat globules into smaller, stable droplets. This is called emulsification.",
+                reference: "Ref: Lec 6, Pg 11, 13",
+                userAnswer: undefined
+            },
+            {
+                type: "mcq",
+                difficulty: "Moderate",
+                vignette: "",
+                question: "What is the direct benefit of *emulsification*?",
+                options: [
+                    "It chemically digests the fat into fatty acids",
+                    "It increases the surface area for pancreatic lipase to act upon",
+                    "It packages fatty acids for transport into the blood",
+                    "It neutralizes the pH of the chyme"
+                ],
+                answer: 1,
+                explanation: "Emulsification *does not* digest fat. It breaks large globules into tiny droplets, which dramatically increases the surface area for the water-soluble pancreatic lipase to attack the fat.",
+                reference: "Ref: Lec 6, Pg 13",
+                userAnswer: undefined
+            },
+            {
+                type: "mcq",
+                difficulty: "Moderate",
+                vignette: "",
+                question: "What is the primary function of a *micelle*?",
+                options: [
+                    "To break down large fat globules",
+                    "To transport the products of fat digestion (fatty acids, monoglycerides) to the intestinal wall",
+                    "To activate pancreatic lipase",
+                    "To be absorbed directly into the portal vein"
+                ],
+                answer: 1,
+                explanation: "After lipase digests the emulsified droplets, bile salts (and lecithin) form micelles, which are tiny 'transport pods' that shuttle the water-insoluble fatty acids and monoglycerides to the cell membrane for absorption.",
+                reference: "Ref: Lec 6, Pg 14-16",
+                userAnswer: undefined
+            },
+            {
+                type: "mcq",
+                difficulty: "Moderate",
+                vignette: "",
+                question: "The vast majority (95%) of bile salts are reabsorbed in which *specific* part of the GI tract to be returned to the liver (enterohepatic circulation)?",
+                options: [
+                    "Duodenum",
+                    "Jejunum",
+                    "Terminal ileum",
+                    "Ascending colon"
+                ],
+                answer: 2,
+                explanation: "The enterohepatic circulation is highly efficient. 95% of bile salts are actively reabsorbed in the terminal ileum and returned to the liver via the portal vein.",
+                reference: "Ref: Lec 6, Pg 18",
+                userAnswer: undefined
+            },
+            {
+                type: "mcq",
+                difficulty: "Moderate",
+                vignette: "",
+                question: "Which hormone, released in response to fat in the duodenum, causes forceful contraction of the gallbladder and relaxation of the Sphincter of Oddi?",
+                options: [
+                    "Secretin",
+                    "Cholecystokinin (CCK)",
+                    "Gastrin",
+                    "Bile salts"
+                ],
+                answer: 1,
+                explanation: "CCK ('Chole-cysto-kinin' = 'Bile-sac-move') is the primary signal for bile release. It contracts the gallbladder and relaxes the sphincter, allowing bile to enter the duodenum.",
+                reference: "Ref: Lec 6, Pg 22",
+                userAnswer: undefined
+            },
+            {
+                type: "mcq",
+                difficulty: "Easy",
+                vignette: "",
+                question: "The brown color of normal feces is due to which bilirubin-derived pigment?",
+                options: [
+                    "Bilirubin",
+                    "Urobilinogen",
+                    "Urobilin",
+                    "Stercobilin"
+                ],
+                answer: 3,
+                explanation: "Intestinal bacteria convert bilirubin into urobilinogen. This is then oxidized to stercobilin, which gives feces its characteristic brown color.",
+                reference: "Ref: Lec 6, Pg 20",
+                userAnswer: undefined
+            },
+            {
+                type: "mcq",
+                difficulty: "Hard",
+                vignette: "",
+                question: "A patient with a gallstone completely blocking the common bile duct would present with jaundice and what other two characteristic findings?",
+                options: [
+                    "Dark stools and dark urine",
+                    "Pale (clay-colored) stools and dark urine",
+                    "Pale (clay-colored) stools and pale urine",
+                    "Dark stools and pale urine"
+                ],
+                answer: 1,
+                explanation: "Bile cannot enter the gut, so no stercobilin is made (pale/clay stools). The conjugated bilirubin 'backs up' from the liver into the blood and is filtered by the kidneys (dark urine).",
+                reference: "Ref: Lec 6, Pg 20, 31",
+                userAnswer: undefined
+            },
+            {
+                type: "mcq",
+                difficulty: "Hard",
+                vignette: "",
+                question: "A patient with massive hemolysis (e.g., sickle cell crisis) develops jaundice. What type of hyperbilirubinemia would be expected?",
+                options: [
+                    "Pre-hepatic; primarily *unconjugated* bilirubin",
+                    "Pre-hepatic; primarily *conjugated* bilirubin",
+                    "Post-hepatic; primarily *unconjugated* bilirubin",
+                    "Post-hepatic; primarily *conjugated* bilirubin"
+                ],
+                answer: 0,
+                explanation: "Massive hemolysis (pre-hepatic) floods the liver with more unconjugated bilirubin than it can process. The liver's conjugation machinery is overwhelmed, leading to a rise in *unconjugated* bilirubin.",
+                reference: "Ref: Lec 6, Pg 21, 32",
+                userAnswer: undefined
+            }
+        ];
+
+
+        // =================================================================
+        // === PART 2 (Lec 6): USMLE-Style Q-Bank (Biliary) ===
+        // =================================================================
+        const usmleLevelMCQs_p2 = [
+            {
+                type: "mcq",
+                difficulty: "Moderate",
+                vignette: "A 45-year-old, overweight female with multiple children (a 'fat, fertile, female of forty') presents with severe, colicky right upper quadrant (RUQ) pain, nausea, and vomiting, especially after eating a fatty meal.",
+                question: "The patient's pain (biliary colic) is caused by the release of which hormone, which is stimulating gallbladder contraction against an obstructed cystic duct?",
+                options: [
+                    "Secretin",
+                    "Gastrin",
+                    "Cholecystokinin (CCK)",
+                    "Somatostatin"
+                ],
+                answer: 2,
+                explanation: "The '5 F's' (Fat, Forty, Female, Fertile, Fair) are classic risk factors for cholesterol gallstones. When she eats a fatty meal, her duodenum releases CCK. CCK causes the gallbladder to contract, but if a stone is blocking the cystic duct, this causes intense pain (biliary colic).",
+                reference: "Ref: Lec 6, Pg 6, 22, 25",
+                highYieldTip: "The '5 F's' are risk factors for gallstones. *Fatty food* → *CCK release* → *Gallbladder contraction*. If a stone is in the cystic duct, this contraction causes *biliary colic*.",
+                userAnswer: undefined
+            },
+            {
+                type: "mcq",
+                difficulty: "Hard",
+                vignette: "The patient from the previous question is admitted. Days later, she develops a fever, constant RUQ pain, and a positive Murphy's sign on exam. Her WBC count is 15,000/mm³.",
+                question: "This progression from intermittent colic to constant pain, fever, and leukocytosis is most characteristic of which complication?",
+                options: [
+                    "Acute cholecystitis",
+                    "Obstructive jaundice",
+                    "Acute pancreatitis",
+                    "Pre-hepatic jaundice"
+                ],
+                answer: 0,
+                explanation: "Biliary colic is intermittent pain from temporary obstruction. When the stone becomes permanently impacted in the cystic duct, it leads to inflammation and infection of the gallbladder wall, which is *acute cholecystitis*. This presents with constant pain, fever, and high WBC.",
+                reference: "Ref: Lec 6, Pg 26-27",
+                highYieldTip: "Biliary Colic (intermittent pain) vs. Acute Cholecystitis (constant pain + fever + leukocytosis). Cholecystitis occurs when a stone gets *permanently stuck* in the cystic duct, causing inflammation.",
+                userAnswer: undefined
+            },
+            {
+                type: "mcq",
+                difficulty: "Hard",
+                vignette: "A 50-year-old man presents with yellowing of his eyes (jaundice). He notes his urine has been 'tea-colored' and his stools have been 'pale, like clay.' A large gallstone is found obstructing his *common bile duct*.",
+                question: "The patient's pale, clay-colored stools are a direct result of the absence of which substance from the intestinal tract?",
+                options: [
+                    "Bilirubin",
+                    "Urobilinogen",
+                    "Stercobilin",
+                    "Bile salts"
+                ],
+                answer: 2,
+                explanation: "Bilirubin (from bile) is normally converted by gut bacteria to urobilinogen, which is then oxidized to stercobilin (brown). If the common bile duct is blocked, no bilirubin reaches the gut, no stercobilin is produced, and stools become pale/clay-colored.",
+                reference: "Ref: Lec 6, Pg 20, 28, 31",
+                highYieldTip: "Obstructive Jaundice (stone in *common bile duct*) → No bile in duodenum. This causes: 1) *Pale/clay stools* (no stercobilin) and 2) *Dark urine* (conjugated bilirubin backs up into blood and is excreted by kidneys).",
+                userAnswer: undefined
+            },
+            {
+                type: "mcq",
+                difficulty: "Hard",
+                vignette: "A patient with known gallstones presents to the ED with severe, boring epigastric pain radiating to the back and a serum amylase 5x the upper limit of normal.",
+                question: "What is the most likely cause of this patient's acute pancreatitis?",
+                options: [
+                    "A stone in the cystic duct",
+                    "A stone in the right hepatic duct",
+                    "A stone obstructing the ampulla of Vater",
+                    "A stone in the fundus of the gallbladder"
+                ],
+                answer: 2,
+                explanation: "This is gallstone pancreatitis. A stone passes from the gallbladder, down the common bile duct, and lodges at the *ampulla of Vater*. This blocks the shared opening of the common bile duct *and* the pancreatic duct, causing pancreatic enzymes to back up and autodigest the pancreas.",
+                reference: "Ref: Lec 6, Pg 28-29",
+                highYieldTip: "A gallstone can cause pancreatitis *only if* it lodges at the *ampulla of Vater* (sphincter of Oddi), blocking both the common bile duct and the pancreatic duct.",
+                userAnswer: undefined
+            },
+            {
+                type: "mcq",
+                difficulty: "Hard",
+                vignette: "A 30-year-old patient with severe Crohn's disease undergoes a surgical resection of his *terminal ileum*. Several months later, he develops steatorrhea.",
+                question: "What is the most likely mechanism for this patient's fat malabsorption?",
+                options: [
+                    "Interruption of the enterohepatic circulation of bile salts",
+                    "Loss of pancreatic lipase secretion",
+                    "Bacterial overgrowth in the remaining small bowel",
+                    "Failure to absorb monosaccharides"
+                ],
+                answer: 0,
+                explanation: "The terminal ileum is the *only* site for active reabsorption of bile salts (95%). Resecting it breaks the enterohepatic circulation. Bile salts are lost in the feces, the liver's synthesis (5%) cannot compensate, and the total bile salt pool is depleted, leading to failed fat emulsification and steatorrhea.",
+                reference: "Ref: Lec 6, Pg 18",
+                highYieldTip: "The *terminal ileum* is the critical site for *bile salt reabsorption*. Resection of the terminal ileum (e.g., in Crohn's) → bile salts are lost in feces → bile salt pool is depleted → fat malabsorption (steatorrhea).",
+                userAnswer: undefined
+            }
+        ];
+
+
+        let totalAnsweredCount = 0;
+        let currentView = 'hy1'; // 'hy1', 'usmle1', 'hy2', 'usmle2'
+        let totalQuestionCount = highYieldMCQs_p1.length + usmleLevelMCQs_p1.length + highYieldMCQs_p2.length + usmleLevelMCQs_p2.length;
+        let totalMCQCount = highYieldMCQs_p1.length + usmleLevelMCQs_p1.length + highYieldMCQs_p2.length + usmleLevelMCQs_p2.length;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const quizContainer = document.getElementById('quiz-container');
+            const scoreContainer = document.getElementById('score-container');
+            const scoreText = document.getElementById('score-text');
+            const restartBtn = document.getElementById('restart-btn');
+            const reviewBtn = document.getElementById('review-btn');
+            const progressBar = document.getElementById('progress-bar');
+            
+            const hyTabBtn_p1 = document.getElementById('hy-tab-btn-p1');
+            const usmleTabBtn_p1 = document.getElementById('usmle-tab-btn-p1');
+            const hyTabBtn_p2 = document.getElementById('hy-tab-btn-p2');
+            const usmleTabBtn_p2 = document.getElementById('usmle-tab-btn-p2');
+            const tabWrapper = document.getElementById('tab-container').parentElement;
+
+            const finishContainer = document.getElementById('finish-container');
+            const answeredCountEl = document.getElementById('answered-count');
+            const totalCountEl = document.getElementById('total-count');
+
+            // Set tab text content
+            hyTabBtn_p1.textContent = `Lec 5: High-Yield (${highYieldMCQs_p1.length})`;
+            usmleTabBtn_p1.textContent = `Lec 5: USMLE Q-Bank (${usmleLevelMCQs_p1.length})`;
+            hyTabBtn_p2.textContent = `Lec 6: High-Yield (${highYieldMCQs_p2.length})`;
+            usmleTabBtn_p2.textContent = `Lec 6: USMLE Q-Bank (${usmleLevelMCQs_p2.length})`;
+
+
+            if (!quizContainer || !scoreContainer || !scoreText || !restartBtn || !reviewBtn || !progressBar || !hyTabBtn_p1 || !usmleTabBtn_p1 || !hyTabBtn_p2 || !usmleTabBtn_p2 || !tabWrapper || !finishContainer || !answeredCountEl || !totalCountEl) { 
+                console.error("Error: Critical DOM elements missing.");
+                return;
+            }
+
+            function updateProgressBar() {
+                if (totalQuestionCount === 0) return;
+                const percentage = (totalAnsweredCount / totalQuestionCount) * 100;
+                progressBar.style.width = `${percentage}%`;
+                answeredCountEl.textContent = totalAnsweredCount;
+            }
+
+            function renderQuiz() {
+                quizContainer.innerHTML = '';
+                
+                let questionsToRender;
+                let typePrefix;
+                let headerText;
+                let headerColor;
+
+                if (currentView === 'hy1') {
+                    questionsToRender = highYieldMCQs_p1;
+                    typePrefix = 'p1-hy';
+                    headerText = 'Lec 5: High-Yield (Pancreas)';
+                    headerColor = 'text-blue-400';
+                } else if (currentView === 'usmle1') {
+                    questionsToRender = usmleLevelMCQs_p1;
+                    typePrefix = 'p1-usmle';
+                    headerText = 'Lec 5: USMLE Q-Bank (Pancreas)';
+                    headerColor = 'text-red-400';
+                } else if (currentView === 'hy2') {
+                    questionsToRender = highYieldMCQs_p2;
+                    typePrefix = 'p2-hy';
+                    headerText = 'Lec 6: High-Yield (Biliary)';
+                    headerColor = 'text-blue-400';
+                } else { // 'usmle2'
+                    questionsToRender = usmleLevelMCQs_p2;
+                    typePrefix = 'p2-usmle';
+                    headerText = 'Lec 6: USMLE Q-Bank (Biliary)';
+                    headerColor = 'text-red-400';
+                }
+
+                // Add section header based on page
+                const headerEl = document.createElement('h2');
+                headerEl.className = `text-2xl font-bold ${headerColor} mb-6 border-b ${headerColor.replace('text-', 'border-')}/30 pb-3`;
+                headerEl.textContent = headerText;
+                quizContainer.appendChild(headerEl);
+
+                if (!Array.isArray(questionsToRender)) {
+                    console.error("questionsToRender is not an array!");
+                    return; 
+                }
+
+                questionsToRender.forEach((q, qIndex) => {
+                     if (!q) {
+                         console.error(`Missing question data at index ${qIndex} in ${typePrefix} array`);
+                         return; 
+                     }
+                    const qBlock = document.createElement('div');
+                    qBlock.id = `q-${typePrefix}-${qIndex}`;
+                    qBlock.className = `p-5 md:p-6 bg-slate-900 border border-slate-700 rounded-xl shadow-lg fade-enter transition-all duration-300`;
+
+                    if (q.type === 'mcq') { 
+                        renderMCQBlock(q, qIndex, typePrefix, qBlock);
+                    } else {
+                        console.warn(`Unknown question type "${q.type}" at index ${qIndex}`);
+                        qBlock.textContent = `Error: Unknown question type at index ${qIndex}.`;
+                    }
+                    quizContainer.appendChild(qBlock);
+                    
+                    // --- START OF FIX ---
+                    // Ensure all feedback elements exist before applying saved answer
+                    if (q.userAnswer !== undefined && q.userAnswer !== null) {
+                        setTimeout(() => {
+                            showMCQAnswerFeedback(typePrefix, qIndex, true);
+                        }, 0);
+                    }
+                    // --- END OF FIX ---
+
+                    // Trigger fade-in animation
+                    setTimeout(() => {
+                        qBlock.classList.add('fade-enter-active');
+                    }, 10 * qIndex); // Stagger animation
+                });
+
+                renderFinishButton();
+                updateProgressBar(); 
+            }
+            
+            function renderFinishButton() {
+                finishContainer.querySelector('div:last-child').innerHTML = ''; // Clear previous button
+                const allAnswered = totalAnsweredCount >= totalQuestionCount;
+                
+                const finishBtnClasses = [
+                    'bg-indigo-600', 'hover:bg-indigo-500', 'text-white', 'px-6', 'py-2.5', 
+                    'rounded-lg', 'font-semibold', 'disabled:opacity-50', 'disabled:bg-slate-700', 
+                    'shadow-md', 'hover:shadow-lg', 'transition-all', 'transform', 'hover:-translate-y-0.5'
+                ];
+                const finishBtn = createButton('finish-btn', 'Finish Quiz', showScore, finishBtnClasses);
+                finishBtn.disabled = !allAnswered; 
+                if (!allAnswered) finishBtn.title = "Answer all questions to finish";
+                finishContainer.querySelector('div:last-child').appendChild(finishBtn);
+            }
+
+            function createDifficultyBadge(difficulty) {
+                const badge = document.createElement('span');
+                badge.className = 'badge mb-4 text-xs font-semibold px-3 py-1 rounded-full';
+                if (difficulty === 'Easy') {
+                    badge.classList.add('bg-green-500/10', 'text-green-300');
+                } else if (difficulty === 'Hard') {
+                    badge.classList.add('bg-red-500/10', 'text-red-300');
+                } else {
+                    badge.classList.add('bg-yellow-500/10', 'text-yellow-300');
+                    difficulty = 'Moderate'; // Ensure default text
+                }
+                badge.textContent = difficulty;
+                return badge;
+            }
+
+            function createReference(refText) {
+                if (!refText) return document.createDocumentFragment(); 
+                const refContainer = document.createElement('div');
+                refContainer.className = 'reference-tooltip mt-3';
+                const refLink = document.createElement('span');
+                refLink.className = 'text-indigo-400 hover:text-indigo-300 text-sm font-medium cursor-help inline-flex items-center gap-1';
+                refLink.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4"><path fill-rule="evenodd" d="M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0ZM7.555 10.33A2 2 0 0 1 9 8h2a2 2 0 0 1 1.445 3.33L10 13.5l-1.445-3.17ZM10 16a6 6 0 1 0 0-12 6 6 0 0 0 0 12Z" clip-rule="evenodd" /></svg>Ref`;
+                const tooltipText = document.createElement('span');
+                tooltipText.className = 'tooltip-text';
+                tooltipText.textContent = refText;
+                refContainer.appendChild(refLink);
+                refContainer.appendChild(tooltipText);
+                return refContainer;
+            }
+
+             function renderMCQBlock(questionData, qIndex, typePrefix, qBlock) { 
+                 if (!questionData || !Array.isArray(questionData.options)) { 
+                     console.error(`Invalid MCQ data at index ${qIndex}`);
+                     qBlock.textContent = 'Error loading question.';
+                     return;
+                 }
+                 
+                 qBlock.appendChild(createDifficultyBadge(questionData.difficulty));
+                 
+                 if (questionData.vignette && questionData.vignette.trim() !== "") {
+                    const vignetteEl = document.createElement('p');
+                    vignetteEl.className = 'text-slate-300 mb-4 text-base leading-relaxed';
+                    vignetteEl.textContent = questionData.vignette;
+                    qBlock.appendChild(vignetteEl);
+                 }
+                 
+                 const questionEl = document.createElement('p');
+                 questionEl.className = 'text-lg font-semibold text-white mb-6';
+                 
+                 const questionNumber = qIndex + 1;
+                 questionEl.textContent = `Q ${questionNumber}. ${questionData.question || 'Missing question text'}`;
+                 
+                 qBlock.appendChild(questionEl);
+                 const optionsContainer = document.createElement('div');
+                 optionsContainer.className = 'space-y-3';
+
+                 questionData.options.forEach((option, oIndex) => {
+                     const optionBtn = document.createElement('button');
+                     optionBtn.className = 'option-btn block w-full text-left px-4 py-3 mb-2 bg-slate-800 border border-slate-700 text-slate-300 rounded-lg hover:bg-slate-700/70 hover:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all duration-200';
+                     optionBtn.textContent = `${String.fromCharCode(65 + oIndex)}. ${option}`;
+                     optionBtn.onclick = () => checkMCQAnswer(typePrefix, qIndex, oIndex);
+                     if (questionData.userAnswer !== undefined && questionData.userAnswer !== null) {
+                         optionBtn.disabled = true;
+                         optionBtn.classList.remove('hover:bg-slate-700/70');
+                     }
+                     optionsContainer.appendChild(optionBtn);
+                 });
+
+                 qBlock.appendChild(optionsContainer);
+                 createAndAppendFeedbackElements(qBlock, qIndex, typePrefix, questionData);
+            }
+
+            function createAndAppendFeedbackElements(parentBlock, qIndex, typePrefix, questionData) {
+                 if (!questionData) return;
+
+                const feedbackContainer = document.createElement('div');
+                feedbackContainer.id = `${typePrefix}-feedback-${qIndex}`;
+                feedbackContainer.className = 'mt-5 hidden';
+
+                const resultEl = document.createElement('h3');
+                resultEl.id = `${typePrefix}-result-${qIndex}`;
+                resultEl.className = 'text-xl font-bold mb-3';
+                feedbackContainer.appendChild(resultEl);
+
+                const showExplanationBtn = document.createElement('button');
+                showExplanationBtn.id = `${typePrefix}-show-exp-btn-${qIndex}`;
+                showExplanationBtn.className = 'text-indigo-400 hover:text-indigo-300 font-medium text-sm hidden'; // Start hidden
+                showExplanationBtn.textContent = 'Show Explanation';
+
+                const explanationContainer = document.createElement('div');
+                explanationContainer.id = `${typePrefix}-explanation-container-${qIndex}`;
+                explanationContainer.className = 'mt-4 hidden'; // Start hidden
+
+                const explanationEl = document.createElement('p');
+                explanationEl.id = `${typePrefix}-explanation-${qIndex}`;
+                explanationEl.className = `mt-3 p-4 text-sm border-l-4 rounded-r-md text-slate-300 leading-relaxed`; // Base class
+                explanationEl.innerHTML = questionData.explanation || 'No explanation provided.'; // Default text
+                explanationContainer.appendChild(explanationEl);
+
+                if (questionData.reference) {
+                    explanationContainer.appendChild(createReference(questionData.reference));
+                }
+                
+                if (questionData.highYieldTip) {
+                    const tipEl = document.createElement('div');
+                    tipEl.className = 'mt-4 p-4 bg-blue-900/50 border-l-4 border-blue-400 rounded-r-md text-slate-100 text-sm font-medium';
+                    tipEl.innerHTML = `<span class="font-bold text-blue-300">High-Yield Tip:</span> ${questionData.highYieldTip}`;
+                    explanationContainer.appendChild(tipEl);
+                }
+
+                showExplanationBtn.onclick = () => {
+                    const isHidden = explanationContainer.classList.toggle('hidden');
+                    showExplanationBtn.textContent = isHidden ? 'Show Explanation' : 'Hide Explanation';
+                };
+
+                parentBlock.appendChild(feedbackContainer);
+                parentBlock.appendChild(showExplanationBtn); 
+                parentBlock.appendChild(explanationContainer);
+            }
+
+            function createButton(id, text, onClick, classes = []) {
+                const btn = document.createElement('button');
+                btn.id = id;
+                btn.textContent = text;
+                btn.className = ['pagination-btn', ...classes].join(' '); 
+                btn.classList.add('disabled:opacity-50', 'disabled:cursor-not-allowed');
+                btn.onclick = onClick;
+                return btn;
+            }
+
+            function updateTabStyles() {
+                const isHy1 = currentView === 'hy1';
+                const isUsmle1 = currentView === 'usmle1';
+                const isHy2 = currentView === 'hy2';
+                const isUsmle2 = currentView === 'usmle2';
+
+                const tabs = [
+                    { btn: hyTabBtn_p1, is: isHy1 },
+                    { btn: usmleTabBtn_p1, is: isUsmle1 },
+                    { btn: hyTabBtn_p2, is: isHy2 },
+                    { btn: usmleTabBtn_p2, is: isUsmle2 }
+                ];
+
+                tabs.forEach(tab => {
+                    tab.btn.classList.toggle('bg-indigo-600', tab.is);
+                    tab.btn.classList.toggle('text-white', tab.is);
+                    tab.btn.classList.toggle('bg-transparent', !tab.is);
+                    tab.btn.classList.toggle('text-slate-400', !tab.is);
+                    tab.btn.classList.toggle('hover:bg-slate-700/50', !tab.is);
+                    tab.btn.classList.toggle('hover:text-slate-200', !tab.is);
+                });
+            }
+
+            function changeView(view) {
+                if (view === currentView) return;
+                currentView = view;
+                updateTabStyles();
+                renderQuiz();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+
+            function checkMCQAnswer(typePrefix, qIndex, selectedIndex) {
+                 let questionArray;
+                 if (typePrefix === 'p1-hy') {
+                    questionArray = highYieldMCQs_p1;
+                 } else if (typePrefix === 'p1-usmle') {
+                    questionArray = usmleLevelMCQs_p1;
+                 } else if (typePrefix === 'p2-hy') {
+                    questionArray = highYieldMCQs_p2;
+                 } else if (typePrefix === 'p2-usmle') {
+                    questionArray = usmleLevelMCQs_p2;
+                 } else {
+                     return;
+                 }
+
+                 if (qIndex < 0 || qIndex >= questionArray.length || !questionArray[qIndex]) {
+                     console.error(`Invalid MCQ index: ${qIndex} for type ${typePrefix}`);
+                     return;
+                 }
+                const question = questionArray[qIndex];
+                if (question.userAnswer !== undefined && question.userAnswer !== null) return;
+
+                question.userAnswer = selectedIndex;
+                totalAnsweredCount++;
+                updateProgressBar();
+                showMCQAnswerFeedback(typePrefix, qIndex, false); 
+                renderFinishButton(); 
+            }
+
+             function showMCQAnswerFeedback(typePrefix, qIndex, forceShowExplanation = false) {
+                 let questionArray;
+                 if (typePrefix === 'p1-hy') {
+                    questionArray = highYieldMCQs_p1;
+                 } else if (typePrefix === 'p1-usmle') {
+                    questionArray = usmleLevelMCQs_p1;
+                 } else if (typePrefix === 'p2-hy') {
+                    questionArray = highYieldMCQs_p2;
+                 } else if (typePrefix === 'p2-usmle') {
+                    questionArray = usmleLevelMCQs_p2;
+                 } else {
+                     return;
+                 }
+                 
+                 if (qIndex < 0 || qIndex >= questionArray.length || !questionArray[qIndex]) return;
+                 
+                 const question = questionArray[qIndex];
+                 const qBlock = document.getElementById(`q-${typePrefix}-${qIndex}`);
+                 if (!qBlock) return;
+
+                 const optionButtons = qBlock.querySelectorAll('.option-btn');
+                 const feedbackContainer = document.getElementById(`${typePrefix}-feedback-${qIndex}`);
+                 const resultEl = document.getElementById(`${typePrefix}-result-${qIndex}`);
+                 const explanationContainer = document.getElementById(`${typePrefix}-explanation-container-${qIndex}`);
+                 const explanationEl = document.getElementById(`${typePrefix}-explanation-${qIndex}`);
+                 const showExplanationBtn = document.getElementById(`${typePrefix}-show-exp-btn-${qIndex}`);
+
+                 if (!feedbackContainer || !resultEl || !explanationContainer || !explanationEl || !showExplanationBtn || !optionButtons.length) {
+                     console.warn(`Missing feedback elements for MCQ ${typePrefix}-${qIndex}`);
+                     return;
+                 }
+
+                 explanationEl.classList.remove('border-green-500', 'bg-green-500/10', 'border-red-500', 'bg-red-500/10');
+                 
+                 optionButtons.forEach(btn => {
+                     btn.disabled = true; 
+                     btn.classList.remove('hover:bg-slate-700/70', 'focus:ring-indigo-500', 'ring-2', 'ring-green-500', 'ring-red-500', 'text-white');
+                 });
+
+                 const isCorrect = question.answer !== undefined && question.userAnswer === question.answer;
+
+                 resultEl.textContent = isCorrect ? 'Correct!' : 'Incorrect';
+                 resultEl.className = `text-xl font-bold mb-3 ${isCorrect ? 'text-green-500' : 'text-red-500'}`;
+                 
+                 explanationEl.classList.add(isCorrect ? 'border-green-500' : 'border-red-500', isCorrect ? 'bg-green-500/10' : 'bg-red-500/10');
+
+                 if (question.userAnswer !== undefined && question.userAnswer !== null && optionButtons[question.userAnswer]) {
+                    if (isCorrect) {
+                        optionButtons[question.userAnswer].classList.add('ring-2', 'ring-green-500', 'text-white');
+                    } else {
+                        optionButtons[question.userAnswer].classList.add('ring-2', 'ring-red-500', 'text-white');
+                    }
+                    optionButtons[question.userAnswer].classList.remove('bg-slate-800', 'border-slate-700', 'text-slate-300');
+                    optionButtons[question.userAnswer].classList.add(isCorrect ? 'bg-green-600/20' : 'bg-red-600/20');
+                 }
+                 if (!isCorrect && question.answer !== undefined && optionButtons[question.answer]) {
+                    optionButtons[question.answer].classList.add('ring-2', 'ring-green-500', 'text-white');
+                    optionButtons[question.answer].classList.remove('bg-slate-800', 'border-slate-700', 'text-slate-300');
+                    optionButtons[question.answer].classList.add('bg-green-600/20');
+                 }
+
+                 feedbackContainer.classList.remove('hidden');
+                 showExplanationBtn.classList.remove('hidden'); 
+
+                 if (forceShowExplanation || !explanationContainer.classList.contains('hidden')) {
+                     explanationContainer.classList.remove('hidden');
+                     showExplanationBtn.textContent = 'Hide Explanation';
+                 } else {
+                     explanationContainer.classList.add('hidden');
+                     showExplanationBtn.textContent = 'Show Explanation';
+                 }
+            }
+
+            function showScore() {
+                 let finalScore = 0;
+                 const mcqQuestions = [...highYieldMCQs_p1, ...usmleLevelMCQs_p1, ...highYieldMCQs_p2, ...usmleLevelMCQs_p2];
+                 
+                 mcqQuestions.forEach(q => {
+                     if (!q) return; 
+                     if (q.type === 'mcq' && q.userAnswer === q.answer) {
+                          finalScore++;
+                     }
+                 });
+                scoreText.textContent = totalMCQCount > 0 ? `Your Score: ${finalScore} / ${totalMCQCount}` : 'Quiz Error: No MCQs found';
+                scoreContainer.classList.remove('hidden');
+                quizContainer.classList.add('hidden');
+                finishContainer.classList.add('hidden');
+                tabWrapper.classList.add('hidden');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+
+            function reviewQuiz() {
+                scoreContainer.classList.add('hidden');
+                quizContainer.classList.remove('hidden');
+                finishContainer.classList.remove('hidden');
+                tabWrapper.classList.remove('hidden');
+                changeView('hy1'); 
+                renderQuiz(); 
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+
+            function restartQuiz() {
+                totalAnsweredCount = 0;
+                [...highYieldMCQs_p1, ...usmleLevelMCQs_p1, ...highYieldMCQs_p2, ...usmleLevelMCQs_p2].forEach(q => {
+                     if (!q) return; 
+                     q.userAnswer = undefined;
+                });
+                scoreContainer.classList.add('hidden');
+                quizContainer.classList.remove('hidden');
+                finishContainer.classList.remove('hidden');
+                tabWrapper.classList.remove('hidden');
+                updateProgressBar(); 
+                changeView('hy1'); 
+                updateTabStyles();
+                renderQuiz(); 
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+
+            // --- Initialization ---
+            totalCountEl.textContent = totalQuestionCount; 
+            answeredCountEl.textContent = totalAnsweredCount; 
+
+            hyTabBtn_p1.addEventListener('click', () => changeView('hy1'));
+            usmleTabBtn_p1.addEventListener('click', () => changeView('usmle1'));
+            hyTabBtn_p2.addEventListener('click', () => changeView('hy2'));
+            usmleTabBtn_p2.addEventListener('click', () => changeView('usmle2'));
+            
+            restartBtn.addEventListener('click', restartQuiz);
+            reviewBtn.addEventListener('click', reviewQuiz);
+           
+            updateTabStyles(); 
+            updateProgressBar(); 
+            renderQuiz(); 
+
+            console.log("GIT Physiology Quiz (Lec 5 & 6) initialized.");
+
+        }); // --- End of DOMContentLoaded ---
+
+    </script>
+</body>
+</html>
